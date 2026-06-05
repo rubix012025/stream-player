@@ -302,6 +302,7 @@
                 // Create Iframe pointing to TVPass through the proxy
                 const iframe = document.createElement('iframe');
                 iframe.src = url;
+                iframe.scrolling = "no"; // DISABLES SCROLLBARS AND WHEEL SCROLL NATIVELY
                 iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen');
                 iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
 
