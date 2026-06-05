@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TVPass Master Control Room</title>
+    <title>TVPass Studio Monitor Wall</title>
     <style>
         body {
             margin: 0;
@@ -183,7 +183,25 @@
         const countLabel = document.getElementById('screen-count');
         const slider = document.getElementById('screen-slider');
 
-        const defaultUrl = "https://ph.tvpass.cc/";
+        // MAPPED CHANNELS USING YOUR CLOUDFLARE PROXY + THE AUTOPLAY PARAMETER.
+        // You can change or add channels by matching the exact name on the TVPass card.
+        const channels = [
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=one sports",  // Screen 1
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=hbo",          // Screen 2
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=cinemax",      // Screen 3
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=sports hd",    // Screen 4
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=gma",          // Screen 5
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=tv5",          // Screen 6
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=axn",          // Screen 7
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=hbo signature",// Screen 8
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=one news",     // Screen 9
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=discovery",    // Screen 10
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=cartoon network", // Screen 11
+            "https://solitary-snow-194c.rubix012025.workers.dev/?play=national geographic" // Screen 12
+        ];
+
+        // If you increase the slider past your list of channels, we will repeat them
+        const defaultUrl = "https://solitary-snow-194c.rubix012025.workers.dev/";
 
         function setPreset(num) {
             slider.value = num;
@@ -191,7 +209,7 @@
         }
 
         function reloadAll() {
-            if (confirm("Are you sure you want to reload all active streams? This will put heavy load on your connection.")) {
+            if (confirm("Are you sure you want to reload all active streams?")) {
                 const iframes = document.querySelectorAll('iframe');
                 iframes.forEach(iframe => {
                     iframe.src = iframe.src;
@@ -229,7 +247,15 @@
 
                 const tag = document.createElement('span');
                 tag.className = 'monitor-tag';
-                tag.textContent = `SCREEN ${String(i).padStart(3, '0')}`;
+                
+                // Assign URL based on your custom channel array (loops back if screen count exceeds array length)
+                const url = channels[(i - 1) % channels.length] || defaultUrl;
+                
+                // Extract clean channel name for label display
+                const urlObj = new URL(url);
+                const playParam = urlObj.searchParams.get('play');
+                const displayName = playParam ? playParam.toUpperCase() : "LIVE STREAM";
+                tag.textContent = `CH ${String(i).padStart(3, '0')}: ${displayName}`;
 
                 const btnGroup = document.createElement('div');
                 btnGroup.className = 'btn-group';
@@ -238,7 +264,7 @@
                 const editBtn = document.createElement('button');
                 editBtn.textContent = 'Edit URL';
                 editBtn.onclick = () => {
-                    const newUrl = prompt(`Enter new URL for Screen ${i}:`, iframe.src);
+                    const newUrl = prompt(`Enter new URL or play parameter for Screen ${i}:`, iframe.src);
                     if (newUrl) iframe.src = newUrl;
                 };
 
@@ -273,9 +299,9 @@
                 controls.appendChild(tag);
                 controls.appendChild(btnGroup);
 
-                // Create Iframe pointing to TVPass
+                // Create Iframe pointing to TVPass through the proxy
                 const iframe = document.createElement('iframe');
-                iframe.src = defaultUrl;
+                iframe.src = url;
                 iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen');
                 iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
 
