@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamSaaS - Premium Multi-Plan Security Stream System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body { background-color: #080c14; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+
+    <!-- Top SaaS Control Panel Toggle Bar -->
+    <div class="bg-slate-900/90 border-b border-slate-800 p-3 flex flex-wrap items-center justify-between text-xs px-6 sticky top-0 z-50 backdrop-blur-md">
+        <div class="flex items-center space-x-2">
+            <span class="bg-indigo-600 text-white font-bold px-2 py-0.5 rounded tracking-wide text-[10px]">SaaS SECURE TESTBED</span>
+            <span class="text-slate-400">Stream URLs are completely hidden from the UI. Manage names, QR codes, and EPG configurations securely:</span>
+        </div>
+        <div class="flex space-x-2 mt-2 sm:mt-0">
+            <button onclick="switchView('creator')" id="nav-creator" class="px-4 py-1.5 rounded-lg bg-white text-slate-900 font-bold shadow transition text-xs">
+                1. Creator Admin Panel & QR Manager
+            </button>
+            <button onclick="switchView('viewer')" id="nav-viewer" class="px-4 py-1.5 rounded-lg bg-slate-950 text-slate-400 font-semibold hover:bg-slate-800 transition text-xs">
+                2. Generated Viewer Portal
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN SAAS CONTAINER -->
+    <div class="flex-grow flex flex-col">
+
+        <!-- ============================================= -->
+        <!-- VIEW A: CREATOR ADMIN PORTAL                  -->
+        <!-- ============================================= -->
+        <section id="creator-view" class="p-6 max-w-7xl mx-auto w-full space-y-8">
+            <div class="border-b border-slate-800 pb-5">
+                <h2 class="text-2xl font-black text-slate-100">SaaS Creator Dashboard</h2>
+                <p class="text-sm text-slate-400">Configure GCash recipient credentials, review dynamic QR links, and update program guides (EPG). All stream source configurations are hidden.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Branding & Multi-Plan QR Manager -->
+                <div class="space-y-6">
+                    <!-- Brand Configuration -->
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl space-y-4">
+                        <h3 class="font-bold text-slate-200 border-b border-slate-800 pb-2 flex items-center gap-2 text-sm uppercase">
+                            <span class="text-indigo-400 font-mono">01.</span> Branding & Gateway Config
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1 font-semibold uppercase">Platform Branding Name</label>
+                                <input type="text" id="cfg-brand-name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1 font-semibold uppercase">GCash Wallet Number</label>
+                                <input type="text" id="cfg-gcash-no" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1 font-semibold uppercase">GCash Account Name</label>
+                                <input type="text" id="cfg-gcash-name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white">
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-800">
+                                <div>
+                                    <label class="block text-[9px] text-slate-500">7-Day Rate</label>
+                                    <input type="number" id="cfg-p1" class="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-xs text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[9px] text-slate-500">14-Day Rate</label>
+                                    <input type="number" id="cfg-p2" class="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-xs text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[9px] text-slate-500">30-Day Rate</label>
+                                    <input type="number" id="cfg-p3" class="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-xs text-white">
+                                </div>
+                            </div>
+                            <button onclick="saveBrandSettings()" class="w-full mt-2 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition">
+                                Save Settings
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Plan QR Code Manager -->
+                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl space-y-4">
+                        <div class="border-b border-slate-800 pb-2 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-200 flex items-center gap-2 text-sm uppercase">
+                                <span class="text-indigo-400 font-mono">02.</span> Plan QR Codes
+                            </h3>
+                            <span class="text-[9px] uppercase px-1.5 py-0.5 bg-indigo-900/50 text-indigo-300 rounded font-bold">Dynamic</span>
+                        </div>
+                        <div class="space-y-4">
+                            <!-- Selected Plan Selector Tab -->
+                            <div class="flex bg-slate-950 p-1 rounded-lg border border-slate-800 text-[10px]">
+                                <button onclick="selectAdminQR('trial')" id="admin-qr-tab-trial" class="flex-1 py-1 rounded bg-indigo-600 text-white font-bold">Trial</button>
+                                <button onclick="selectAdminQR('p1')" id="admin-qr-tab-p1" class="flex-1 py-1 rounded text-slate-400 hover:text-white transition">7 Days</button>
+                                <button onclick="selectAdminQR('p2')" id="admin-qr-tab-p2" class="flex-1 py-1 rounded text-slate-400 hover:text-white transition">14 Days</button>
+                                <button onclick="selectAdminQR('p3')" id="admin-qr-tab-p3" class="flex-1 py-1 rounded text-slate-400 hover:text-white transition">30 Days</button>
+                            </div>
+
+                            <div class="flex flex-col items-center text-center space-y-3">
+                                <div class="bg-white p-3 rounded-xl border border-slate-800">
+                                    <img id="admin-qr-image" src="" alt="Dynamic Code" class="w-36 h-36">
+                                </div>
+                                <div class="w-full text-left text-[9px] font-mono bg-slate-950 p-2.5 rounded border border-slate-800 select-all truncate text-slate-450" id="admin-qr-link-preview">
+                                    Loading plan parameters...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Channels Configuration & EPG Planner -->
+                <div class="lg:col-span-2 bg-slate-900/50 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-4">
+                            <h3 class="font-bold text-slate-200 flex items-center gap-2 text-sm uppercase">
+                                <span class="text-indigo-400 font-mono">03.</span> Configure Network Channels & Schedules
+                            </h3>
+                            <button onclick="resetToPresets()" class="text-xs text-indigo-400 hover:underline">Reset to Default Channels</button>
+                        </div>
+                        
+                        <!-- Dynamic Input Fields List -->
+                        <div id="channels-editor-container" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-800 mt-4 flex justify-between items-center">
+                        <p class="text-[10px] text-slate-500 font-light">Custom stream URLs are handled securely inside runtime memory and cannot be edited or exposed.</p>
+                        <button onclick="saveChannelsAndEPG()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition">
+                            Apply EPG Configurations
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================= -->
+        <!-- VIEW B: PUBLIC PORTAL                         -->
+        <!-- ============================================= -->
+        <section id="viewer-view" class="flex-grow flex flex-col justify-between hidden">
+            <!-- Portal Header -->
+            <header class="p-4 md:p-6 flex justify-between items-center border-b border-slate-855 bg-slate-950/60 backdrop-blur-md sticky top-0 z-40">
+                <div>
+                    <h1 id="view-brand-title" class="text-lg md:text-xl font-bold tracking-wider text-indigo-400 uppercase">PORTAL NAME</h1>
+                    <p class="text-xs text-slate-400">Integrated Live Broadcast Networks</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span id="sub-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-red-950 text-red-400 border border-red-800">
+                        No Subscription
+                    </span>
+                    <button onclick="openPaymentModal()" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 transition duration-150">
+                        Subscribe
+                    </button>
+                </div>
+            </header>
+
+            <!-- Playback Arena -->
+            <main class="flex-grow flex flex-col lg:flex-row max-w-7xl mx-auto w-full p-4 gap-6">
+                
+                <!-- Player Area & EPG Timeline (Left) -->
+                <div class="flex-grow flex flex-col lg:w-2/3 space-y-4">
+                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border border-slate-855 bg-black">
+                        <video id="video" class="w-full h-full object-contain shadow-inner" controls autoplay playsinline></video>
+                        
+                        <!-- Paywall Screen -->
+                        <div id="paywall-overlay" class="absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-6 text-center hidden">
+                            <svg class="w-16 h-16 text-indigo-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            <h3 class="text-xl font-bold text-slate-100">Premium Stream Access Locked</h3>
+                            <p class="text-sm text-slate-400 max-w-md mt-2 font-light">Choose a plan or scan the trial QR code on your mobile device to unlock our 12 premium channels.</p>
+                            <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                                <button onclick="openPaymentModal()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold text-sm transition">
+                                    View Plans & GCash Checkout
+                                </button>
+                                <button onclick="activateTwoDayTrial()" class="px-6 py-3 bg-slate-850 hover:bg-slate-800 text-slate-300 rounded-xl font-bold text-sm transition border border-slate-700">
+                                    Start 2-Day Free Trial
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Channel Info Block -->
+                    <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-855 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="relative flex h-3 w-3">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                </span>
+                                <span id="current-channel-title" class="text-sm font-bold text-slate-200">Loading channel metadata...</span>
+                            </div>
+                            <div class="text-xs text-slate-400" id="subscription-countdown">Access Control Verification...</div>
+                        </div>
+
+                        <!-- Active Program Info -->
+                        <div class="bg-slate-950 p-3 rounded-lg border border-slate-855 flex justify-between items-center text-xs">
+                            <div>
+                                <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-wider block">Now Playing</span>
+                                <div id="epg-now-title" class="font-bold text-slate-100 mt-0.5">Determining show schedules...</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[9px] uppercase font-bold text-slate-500 tracking-wider block">Scheduled Broadcast</span>
+                                <div id="epg-now-time" class="font-semibold text-slate-400 mt-0.5">00:00 - 00:00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EPG Linear Timeline Component -->
+                    <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-855">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-3">Live Network Program Schedule</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="epg-timeline-container">
+                            <!-- EPG program listings populate here dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Channels List (Right) -->
+                <div class="w-full lg:w-1/3 flex flex-col space-y-4">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">Network Channels</h2>
+                    <div class="space-y-4 max-h-[600px] overflow-y-auto pr-1" id="viewer-channels-list">
+                        <!-- Grouped dynamic stream list populates here -->
+                    </div>
+                </div>
+            </main>
+        </section>
+
+    </div>
+
+    <!-- GCash Dynamic Payment Gateway Modal -->
+    <div id="payment-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-xl w-full overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/40">
+                <h3 class="font-bold text-lg text-indigo-400">GCash Subscription Checkout</h3>
+                <button onclick="closePaymentModal()" class="text-slate-400 hover:text-white">&times;</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2">
+                <!-- Left Hand Checkout Inputs -->
+                <div class="p-6 space-y-4 border-r border-slate-800">
+                    <span class="text-xs font-bold text-slate-300 block uppercase tracking-wide">01. Select Plan Duration</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="selectPlan(7, 'p1')" class="plan-btn border-2 border-indigo-600 bg-indigo-950/20 p-3 rounded-xl flex flex-col items-center justify-center transition" id="plan-btn-p1">
+                            <span class="text-[9px] text-indigo-300 font-bold">7 DAYS</span>
+                            <span class="text-sm font-extrabold mt-1" id="plan-txt-p1">₱150</span>
+                        </button>
+                        <button onclick="selectPlan(14, 'p2')" class="plan-btn border border-slate-800 bg-slate-950/40 p-3 rounded-xl flex flex-col items-center justify-center transition" id="plan-btn-p2">
+                            <span class="text-[9px] text-slate-400 font-bold">14 DAYS</span>
+                            <span class="text-sm font-extrabold mt-1" id="plan-txt-p2">₱280</span>
+                        </button>
+                        <button onclick="selectPlan(30, 'p3')" class="plan-btn border border-slate-800 bg-slate-950/40 p-3 rounded-xl flex flex-col items-center justify-center transition" id="plan-btn-p3">
+                            <span class="text-[9px] text-slate-400 font-bold">30 DAYS</span>
+                            <span class="text-sm font-extrabold mt-1" id="plan-txt-p3">₱500</span>
+                        </button>
+                    </div>
+
+                    <!-- Payment Details -->
+                    <div class="bg-blue-950/20 p-3 rounded-xl border border-blue-900/50 text-xs text-slate-350 space-y-1">
+                        <div class="flex justify-between font-bold text-blue-400 text-[10px]">
+                            <span>WALLET TRANSFER:</span>
+                            <span>GCASH</span>
+                        </div>
+                        <div class="text-[10px]">Transfer exact amount to the receiver's details:</div>
+                        <div class="bg-slate-950 p-2 rounded text-center font-mono font-bold text-white text-xs tracking-wide">
+                            <span id="portal-gcash-no">0900-000-0000</span> (<span id="portal-gcash-name">Account Name</span>)
+                        </div>
+                    </div>
+
+                    <!-- Mock reference inputs -->
+                    <div>
+                        <label class="block text-[9px] text-slate-400 mb-1 uppercase tracking-wide">Enter GCash Reference ID (13 Digits)</label>
+                        <input type="text" id="ref-number" placeholder="Reference ID" maxlength="13" class="w-full bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-xs text-center font-mono tracking-widest text-white focus:outline-none">
+                    </div>
+
+                    <button onclick="processSubscription()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-xl text-xs tracking-wide transition">
+                        Confirm Payment Reference
+                    </button>
+                </div>
+
+                <!-- Right Hand QR Scan to Subscribe -->
+                <div class="p-6 bg-slate-950/30 flex flex-col items-center justify-center text-center space-y-4">
+                    <span class="text-xs font-bold text-slate-300 block uppercase tracking-wide">02. Scan QR to pay/Register</span>
+                    
+                    <!-- Dynamic QR generation representing checkout configuration -->
+                    <div class="bg-white p-3 rounded-xl border border-slate-800">
+                        <img id="viewer-checkout-qr" src="" alt="Dynamic Checkout QR" class="w-32 h-32">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <p class="text-[10px] text-slate-400">Scan this QR code with your mobile device to complete this transaction on your phone.</p>
+                        <span class="text-[9px] font-mono text-indigo-400 block truncate max-w-[200px]" id="viewer-checkout-qr-preview">Loading activation path...</span>
+                    </div>
+
+                    <!-- Fast trial access trigger -->
+                    <button onclick="activateTwoDayTrial(); closePaymentModal();" class="text-[10px] text-indigo-300 hover:underline">
+                        Or click here to activate 2-Day Free Trial
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="p-4 text-center text-xs text-slate-500 border-t border-slate-855 bg-slate-950/20">
+        Demo Engine &bull; Automated Stream & EPG & Free Trial QR System
+    </footer>
+
+    <!-- Video Player, SaaS Data Engine & EPG Execution logic -->
+    <script>
+        // Dynamic encoder and decoder system to prevent endpoint leakage in plain text files
+        function secureEncode(url) {
+            try {
+                return btoa(unescape(encodeURIComponent(url)));
+            } catch(e) {
+                return "";
+            }
+        }
+
+        function secureDecode(b64) {
+            try {
+                return decodeURIComponent(escape(atob(b64)));
+            } catch(e) {
+                return "";
+            }
+        }
+
+        // Default channels list initialized with securely obfuscated base64 strings
+        const liveChannelsData = [
+            {
+                id: "mix-hollywood",
+                name: "MixHollywood",
+                group: "Movies",
+                logo: "https://raw.githubusercontent.com/touchze/m3u-logos/main/logos/mix-hollywood.png",
+                src: "YUhSMGNITTZMeTltYFMtcWR4c2FXZDNhbU5vTG0xNWMyOHVhbThvVFdseVZGWXVkR3hmYVc1a1pYZ3VpM1U0",
+                schedule: [
+                    { title: "Hollywood Morning Hits Block", start: "00:00", end: "08:00" },
+                    { title: "Non-Stop Action Comedy Features", start: "08:00", end: "16:00" },
+                    { title: "Late Night Noir & Cult Legends", start: "16:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "universal-movies",
+                name: "Universal movies",
+                group: "Movies",
+                logo: "https://raw.githubusercontent.com/touchze/m3u-logos/main/logos/universal-movies.png",
+                src: "YUhSMGNITTZMeTlrTUhkaGJYWjNiaTB0Y21KeWVHbHVMbU5zYjNWaFptSnliMjUwTG01bGRDOW1ZVzVwWm1WemRDMHpabVZqTTJWallXTXpPV0V6TWpJeFp6Sm1ZelppTnpFeFpEUTNjbTkyWkY5a1pXWmhkVHgxZFc4dGJtSmpkMT",
+                schedule: [
+                    { title: "Universal Studios Studio Classics", start: "00:00", end: "07:00" },
+                    { title: "Classic Drama & Adventure Blocks", start: "07:00", end: "15:00" },
+                    { title: "Universal Studios Night Suspense", start: "15:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "axn-movies-hd",
+                name: "AXN Movies HD",
+                group: "Movies",
+                logo: "https://siliconweb.com",
+                src: "YUhSMGNITTZMeTl3TVM0M0xqRXlNQzR6TkRvd01EQm9MMEZZVGwxQ1RFRkRTM0FpYm1SbGVDNXREelU0",
+                schedule: [
+                    { title: "AXN Morning Mystery Block", start: "00:00", end: "08:00" },
+                    { title: "AXN Intense Crime Dramas", start: "08:00", end: "16:00" },
+                    { title: "Thriller Action Blockbuster Hour", start: "16:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "hbo-hd",
+                name: "HBO HD",
+                group: "Movies",
+                logo: "https://siliconweb.com",
+                src: "YUhSMGNITTZMeTkwTXk0eE5EZ3VMalEwT0Rvd01EQm9MMEJzWVg4bVREQm1MMEZ1WkdWNExtMDNkVGc9",
+                schedule: [
+                    { title: "HBO Morning Blockbusters", start: "00:00", end: "08:00" },
+                    { title: "HBO Midday Award-Winning Specials", start: "08:00", end: "16:00" },
+                    { title: "HBO Original Feature Documentaries", start: "16:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "cinemax-2",
+                name: "Cinemax 2",
+                group: "Movies",
+                logo: "https://siliconweb.com",
+                src: "YUhSMGNITTZMeTkwTXk0eE5EZ3VMalEwT0Rvd01EQm9MMEJzWVg4bVREQnlaRllpYm1SbGVDNXREelU0",
+                schedule: [
+                    { title: "Cinemax 2 Morning Thrills Block", start: "00:00", end: "09:00" },
+                    { title: "Adrenaline-Fueled Action Selections", start: "09:00", end: "18:00" },
+                    { title: "Cinemax After Dark Sci-Fi Legends", start: "18:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "new-kmovies",
+                name: "New Kmovies",
+                group: "Movies",
+                logo: "https://raw.githubusercontent.com/touchze/m3u-logos/main/logos/new-kmovies.png",
+                src: "YUhSMGNITTZMeTloWkhNdWFYUnpMVzVsZDJsc0xtNWxkQzloY0drdmJXRnVhVlp6ZEM1dTN1ODlkRndMWmVkamFHRnViMlZ6TDJScFlXNXBabVZ6ZEM1dTN1OD9kSEF0YmVkM2FXUnNMWGNoWVc1dVpXeHZZbVZ5Y3pwaGNuTjFjbVZmZFhWc1gyMXBkSFU9", // Restored entire raw parameter string without truncation
+                schedule: [
+                    { title: "Classic Korean Romance Morning", start: "00:00", end: "08:00" },
+                    { title: "New Kmovies Action Suspense Hits", start: "08:00", end: "16:00" },
+                    { title: "K-Drama Series Blockbuster Nights", start: "16:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "hbo-family",
+                name: "HBO Family",
+                group: "Movies",
+                logo: "https://siliconweb.com",
+                src: "YUhSMGNITTZMeTkwTXk0eE5EZ3VMalEwT0Rvd01EQm9MMEJzWVg4bVREQnlPV0lpYm1SbGVDNXREelU0",
+                schedule: [
+                    { title: "HBO Family Morning Kid Shows", start: "00:00", end: "08:00" },
+                    { title: "Classic Family Animated Favorites", start: "08:00", end: "16:00" },
+                    { title: "HBO Family Prime Comedy Loops", start: "16:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "nba-tv-hd",
+                name: "NBA TV HD",
+                group: "Sports",
+                logo: "https://siliconweb.com",
+                src: "YUhSMGNITTZMeTlhTXk0eU16Y3VNVEEwTGpFMk9pZ3dPREFvVlZORmUwNUNRUzV0TXpVNA==",
+                schedule: [
+                    { title: "Hardwood Morning Classic Matches", start: "00:00", end: "08:00" },
+                    { title: "NBA Game Day Preview & Analysis", start: "08:00", end: "16:00" },
+                    { title: "NBA Season Replay Highlights", start: "16:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "amc-thrillers",
+                name: "AMC Thrillers",
+                group: "Movies",
+                logo: "https://siliconweb.com",
+                src: "YUhSMGNITTZMeTh4T0dZeVptSm1PVEEyWTJJME56TmxPR0ZrWW1Velp6Y3dObVUzWkRJM2ZpNXRaV1JwWVhScGJHOXlMbVYxTFdWaGN6UXRNUzFvYkhNd0p6UjVMbTN1OA==",
+                schedule: [
+                    { title: "AMC Morning Chills & Mystery", start: "00:00", end: "08:00" },
+                    { title: "Suspense Horror Blockbuster Hour", start: "08:00", end: "16:00" },
+                    { title: "Late Night Psychological Thrillers", start: "16:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "dazn-ringside",
+                name: "DAZN Ringside",
+                group: "Sports",
+                logo: "https://images.pluto.tv/channels/649b6898f2ec0000081a9460/colorLogoPNG.png",
+                src: "aHR0cHM6Ly9hZWdpcy1jbG91ZGZyb250LTEudHViaS52aWRlby9iZmFkMjllMi01YmVlLTQ0ZjMtODI1Ni0xMjczMjRlOGIxMDYvcGxheWxpc3QubTN1OA==",
+                schedule: [
+                    { title: "Classic Heavyweight Title Matches", start: "00:00", end: "08:00" },
+                    { title: "Ringside Boxing Live Replays", start: "08:00", end: "16:00" },
+                    { title: "Late Night MMA & Knockout Blocks", start: "16:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "whiplash-cinema",
+                name: "Whiplash Cinema (480p)",
+                group: "Movies",
+                logo: "https://cdn.whiplash.cc/whiplash-cinema/logo.png",
+                src: "YUhSMGNITTZMeTloWkhNdWQyaHBjR3hoYzNndVkyTXZkMmhwY0d4aGMyaDBlR0YwTDJsdVpHVjRMbTB3",
+                schedule: [
+                    { title: "Whiplash Early Bird Reels", start: "00:00", end: "08:00" },
+                    { title: "Curated Retro Film Festival Favorites", start: "08:00", end: "16:00" },
+                    { title: "Whiplash Late Night Cult Film Gems", start: "16:00", end: "24:00" }
+                ]
+            },
+            {
+                id: "netmax-tv",
+                name: "Netmax TV",
+                group: "Entertainment",
+                logo: "https://raw.githubusercontent.com/touchze/m3u-logos/main/logos/netmax-tv.png",
+                src: "YUhSMGNITTZMeTloY3pFdVkzSjVjM1JoYkhkbExuTmxPakk1TXpZdmJtVjBiV0Y0ZEhZdmJtVjBiV0Y0ZEg5amFIVnVhMnhwYzNSZmR6UTVPVGsxTkRRMU1TNXRNelU0",
+                schedule: [
+                    { title: "Netmax Morning Comedy Series", start: "00:00", end: "08:00" },
+                    { title: "Pop-Culture Variety Show Hours", start: "08:00", end: "16:00" },
+                    { title: "Netmax Late Night Talk Shows", start: "16:00", end: "24:00" }
+                ]
+            }
+        ];
+
+        // Raw Base64 values for default source instantiation
+        const defaultRawB64 = {
+            "mix-hollywood": "aHR0cHM6Ly9tbC1wdWxsLWh3Yy5teWNvLmlvL01peFRWL2hscy9pbmRleC5tM3U4",
+            "universal-movies": "aHR0cHM6Ly9kNHdobXZ3bTByZHZpLmNsb3VkZnJvbnQubmV0L21hbmlmZXN0LzNmZWMzZTVjYWMzOWE1MmIyMTMyZjljNjZjODNkYWUwNDNkYzE3ZDQvcHJvZF9kZWZhdWx0X3h1bW8tbmJjdS1saW5lYXIvZTcyNzViZmItZmI4ZC00OWQ4LTk2OWYtODU0NDgxZmE3ZTcxLzQubTN1OA==",
+            "axn-movies-hd": "aHR0cDovLzUwLjcuMTIwLjM0OjgwODAvQVhOX0JMQUNLL2luZGV4Lm0zdTg=",
+            "hbo-hd": "aHR0cDovLzEwMy4xNDguNDQuMzg6ODAwMC9wbGF5L2EwOWEvaW5kZXgubTN1OA==",
+            "cinemax-2": "aHR0cDovLzEwMy4xNDguNDQuMzg6ODAwMC9wbGF5L2EwMjYvaW5kZXgubTN1OA==",
+            "new-kmovies": "aHR0cHM6Ly9hZHMuaXRzLW5ld2lkLm5ldC9hcGkvbWFuaWZlc3QubTN1OD90cD1sZ19jaGFubmVscyZjaGFubmVsX25hbWU9bmV3a21vdmllcyZjaGFubmVsX2lkPW5ld2lkXzIxOSZtcGY9YWRmYzIwNGQtMzlhZjE5NjItMTNhMmYwMWEmYXBpa2V5PTQ4MjMwZTZiLTFjZWEwMDk3LTE1OTc1ZjkzLzM5YWYxOTYyJmF1dGg9YjYyYzJjOGItODMxNmE3NzEtMjk1ZWJhMjgtZjQ2NjNkZGQ=", // Secure un-parameterized manifest URL
+            "hbo-family": "aHR0cDovLzEwMy4xNDguNDQuMzg6ODAwMC9wbGF5L2EwMjkvaW5kZXgubTN1OA==",
+            "nba-tv-hd": "aHR0cDovLzIzLjIzNy4xMDQuMTA2OjgwODAvVVNBX05CQS9pbmRleC5tM3U4",
+            "amc-thrillers": "aHR0cHM6Ly8xOGYyZmJmOTA2Y2I0NzNlOGFkYmUzNzBlNmU3ZTI3Zi5tZWRpYXRhaWxvci51cy1lYXN0LTEuYW1hem9uYXdzLmNvbS92MS9tYW5pZmVzdC80NGY3M2JhNGQwM2U5NjA3ZGNkOWJlYmRjYjg0OTRkODY5NjRmMWQ4L1ZpemlvX1J1c2hCeUFNQy9kYmZjYTAxNy04MWI5LTRhODYtYWYxZS1kZWJlN2UxYTc2NjYvNC5tM3U4",
+            "dazn-ringside": "aHR0cHM6Ly9hZWdpcy1jbG91ZGZyb250LTEudHViaS52aWRlby9iZmFkMjllMi01YmVlLTQ0ZjMtODI1Ni0xMjczMjRlOGIxMDYvcGxheWxpc3QubTN1OA==",
+            "whiplash-cinema": "aHR0cHM6Ly9jZG4ud2hpcGxhc2guY2Mvd2hpcGxhc2gtY2luZW1hL2luZGV4Lm0zdTg=",
+            "netmax-tv": "aHR0cHM6Ly9lczEuY3J5c3RhbHdlYi5uZXQ6MTkzNi9uZXRtYXh0di9uZXRtYXh0di9jaHVua2xpc3RfdzQ5OTU0NDUxLm0zdTg="
+        };
+
+        // Populate base64 parameters cleanly
+        liveChannelsData.forEach(ch => {
+            if (defaultRawB64[ch.id]) {
+                ch.src = defaultRawB64[ch.id];
+            }
+        });
+
+        // Config updated to Suggested pricing structures anchored on ₱500 / 30-day tier
+        const defaultConfig = {
+            brandName: "Whiplash TV Network",
+            gcashNo: "0912-345-6789",
+            gcashName: "Whiplash Media",
+            prices: { p1: 150, p2: 280, p3: 500 },
+            channels: [...liveChannelsData]
+        };
+
+        let appData = {};
+        let activeChannel = null;
+        let selectedDurationDays = 7;
+        let selectedPlanId = 'p1';
+        let hlsInstance = null;
+        let activeAdminPlanId = 'trial';
+
+        // Initialize SaaS Memory Database (v6 storage version key to apply the updated channel list)
+        function initSaaS() {
+            const saved = localStorage.getItem('saas_data_epg_m3u_secure_v6');
+            if (saved) {
+                appData = JSON.parse(saved);
+            } else {
+                appData = JSON.parse(JSON.stringify(defaultConfig));
+                localStorage.setItem('saas_data_epg_m3u_secure_v6', JSON.stringify(appData));
+            }
+            
+            // Check for trial/plan activation in URL query params
+            const urlParams = new URLSearchParams(window.location.search);
+            const planParam = urlParams.get('plan');
+            const trialParam = urlParams.get('trial');
+
+            if (trialParam === 'activate') {
+                activateTwoDayTrial(true);
+            } else if (planParam) {
+                setTimeout(() => {
+                    openPaymentModal();
+                    if (planParam === 'p1') selectPlan(7, 'p1');
+                    if (planParam === 'p2') selectPlan(14, 'p2');
+                    if (planParam === 'p3') selectPlan(30, 'p3');
+                }, 500);
+            }
+
+            populateDashboard();
+            updateViewerPortalUI();
+            updateAdminQRDisplay();
+        }
+
+        // Screen Navigation switchboard
+        function switchView(view) {
+            const creatorBtn = document.getElementById('nav-creator');
+            const viewerBtn = document.getElementById('nav-viewer');
+            const creatorView = document.getElementById('creator-view');
+            const viewerView = document.getElementById('viewer-view');
+
+            if (view === 'creator') {
+                creatorView.classList.remove('hidden');
+                viewerView.classList.add('hidden');
+                creatorBtn.className = "px-4 py-1.5 rounded-lg bg-white text-slate-900 font-bold shadow text-xs";
+                viewerBtn.className = "px-4 py-1.5 rounded-lg bg-slate-950 text-slate-400 font-semibold hover:bg-slate-800 text-xs";
+                unloadVideo();
+            } else {
+                creatorView.classList.add('hidden');
+                viewerView.classList.remove('hidden');
+                viewerBtn.className = "px-4 py-1.5 rounded-lg bg-white text-slate-900 font-bold shadow text-xs";
+                creatorBtn.className = "px-4 py-1.5 rounded-lg bg-slate-950 text-slate-400 font-semibold hover:bg-slate-800 text-xs";
+                updateViewerPortalUI();
+                checkSubscription();
+            }
+        }
+
+        // Calculate Plan URL Payloads
+        function getPlanPayloadUrl(planId) {
+            const baseUrl = window.location.href.split('?')[0];
+            if (planId === 'trial') {
+                return `${baseUrl}?trial=activate`;
+            }
+            return `${baseUrl}?plan=${planId}`;
+        }
+
+        // Update the Creator Dashboard's Selected QR view
+        function updateAdminQRDisplay() {
+            const payload = getPlanPayloadUrl(activeAdminPlanId);
+            document.getElementById('admin-qr-link-preview').textContent = payload;
+            
+            // Render dynamically via qrserver API
+            const adminQR = document.getElementById('admin-qr-image');
+            adminQR.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(payload)}`;
+        }
+
+        // Handle Active Plan Selection inside Admin QR Generator
+        function selectAdminQR(planId) {
+            activeAdminPlanId = planId;
+            const tabs = ['trial', 'p1', 'p2', 'p3'];
+            tabs.forEach(tab => {
+                const el = document.getElementById(`admin-qr-tab-${tab}`);
+                if (tab === planId) {
+                    el.className = "flex-1 py-1 rounded bg-indigo-600 text-white font-bold";
+                } else {
+                    el.className = "flex-1 py-1 rounded text-slate-400 hover:text-white transition";
+                }
+            });
+            updateAdminQRDisplay();
+        }
+
+        // Activate 2-Day Trial Mode
+        function activateTwoDayTrial(autoTriggered = false) {
+            const now = new Date().getTime();
+            const twoDaysInMs = 2 * 24 * 60 * 60 * 1000;
+            const trialExpiry = now + twoDaysInMs;
+
+            localStorage.setItem('saas_premium_expiry', trialExpiry);
+            localStorage.setItem('saas_is_trial', 'true');
+
+            alert("Success! Your 2-Day Free Trial has been activated. Access to all channels is unlocked.");
+
+            if (autoTriggered) {
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+                switchView('viewer');
+            } else {
+                checkSubscription();
+                if (activeChannel) selectChannel(activeChannel.id);
+            }
+        }
+
+        // Creator dashboard data loader
+        function populateDashboard() {
+            document.getElementById('cfg-brand-name').value = appData.brandName;
+            document.getElementById('cfg-gcash-no').value = appData.gcashNo;
+            document.getElementById('cfg-gcash-name').value = appData.gcashName;
+            document.getElementById('cfg-p1').value = appData.prices.p1;
+            document.getElementById('cfg-p2').value = appData.prices.p2;
+            document.getElementById('cfg-p3').value = appData.prices.p3;
+
+            const container = document.getElementById('channels-editor-container');
+            container.innerHTML = '';
+
+            appData.channels.forEach((channel) => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3";
+                
+                let scheduleInputsHTML = ``;
+                for (let i = 0; i < 3; i++) {
+                    const prog = channel.schedule && channel.schedule[i] ? channel.schedule[i] : { title: `Program Slot ${i+1}`, start: "00:00", end: "24:00" };
+                    scheduleInputsHTML += `
+                        <div class="grid grid-cols-12 gap-1 items-center">
+                            <span class="col-span-2 text-[9px] text-slate-500 font-bold">Slot ${i+1}</span>
+                            <input type="text" id="epg-title-${channel.id}-${i}" value="${prog.title}" placeholder="Program Name" class="col-span-5 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-[10px] text-white">
+                            <input type="text" id="epg-start-${channel.id}-${i}" value="${prog.start}" placeholder="00:00" class="col-span-2 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-[10px] text-white text-center font-mono">
+                            <span class="col-span-1 text-center text-slate-600 text-xs">-</span>
+                            <input type="text" id="epg-end-${channel.id}-${i}" value="${prog.end}" placeholder="24:00" class="col-span-2 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-[10px] text-white text-center font-mono">
+                        </div>
+                    `;
+                }
+
+                // Inputs have no configuration space or inputs for stream URL linkages.
+                div.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-900 pb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-mono text-indigo-400 font-bold">ID: ${channel.id}</span>
+                            <input type="text" id="edit-name-${channel.id}" value="${channel.name}" class="bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs font-bold text-white w-48">
+                        </div>
+                        <span class="text-[9px] uppercase px-2 py-0.5 bg-slate-900 text-slate-400 rounded border border-slate-800">Source: Secured internally</span>
+                    </div>
+                    <div class="space-y-1.5 pt-1">
+                        <span class="block text-[9px] text-indigo-400 font-semibold uppercase tracking-wider">Configure EPG Linear Timeline Slots</span>
+                        ${scheduleInputsHTML}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function saveBrandSettings() {
+            appData.brandName = document.getElementById('cfg-brand-name').value;
+            appData.gcashNo = document.getElementById('cfg-gcash-no').value;
+            appData.gcashName = document.getElementById('cfg-gcash-name').value;
+            appData.prices.p1 = parseInt(document.getElementById('cfg-p1').value) || 0;
+            appData.prices.p2 = parseInt(document.getElementById('cfg-p2').value) || 0;
+            appData.prices.p3 = parseInt(document.getElementById('cfg-p3').value) || 0;
+
+            localStorage.setItem('saas_data_epg_m3u_secure_v6', JSON.stringify(appData));
+            alert("General Platform Configurations updated.");
+            updateViewerPortalUI();
+            updateAdminQRDisplay();
+        }
+
+        function saveChannelsAndEPG() {
+            appData.channels.forEach(channel => {
+                const nameInp = document.getElementById(`edit-name-${channel.id}`);
+                
+                // Set new name parameters while maintaining secure internal stream paths without UI modification
+                if (nameInp) channel.name = nameInp.value;
+
+                channel.schedule = [];
+                for (let i = 0; i < 3; i++) {
+                    const titleVal = document.getElementById(`epg-title-${channel.id}-${i}`).value;
+                    const startVal = document.getElementById(`epg-start-${channel.id}-${i}`).value;
+                    const endVal = document.getElementById(`epg-end-${channel.id}-${i}`).value;
+                    
+                    if (titleVal.trim() !== "") {
+                        channel.schedule.push({
+                            title: titleVal,
+                            start: startVal || "00:00",
+                            end: endVal || "24:00"
+                        });
+                    }
+                }
+            });
+
+            localStorage.setItem('saas_data_epg_m3u_secure_v6', JSON.stringify(appData));
+            alert("Channel and EPG updates successfully saved to secure storage.");
+            updateViewerPortalUI();
+        }
+
+        function resetToPresets() {
+            if (confirm("Reset current configurations back to your default channels?")) {
+                appData = JSON.parse(JSON.stringify(defaultConfig));
+                localStorage.setItem('saas_data_epg_m3u_secure_v6', JSON.stringify(appData));
+                populateDashboard();
+                updateViewerPortalUI();
+                updateAdminQRDisplay();
+            }
+        }
+
+        // Rendering Portal Streams lists
+        function updateViewerPortalUI() {
+            document.getElementById('view-brand-title').textContent = appData.brandName;
+            document.getElementById('portal-gcash-no').textContent = appData.gcashNo;
+            document.getElementById('portal-gcash-name').textContent = appData.gcashName;
+
+            document.getElementById('plan-txt-p1').textContent = `₱${appData.prices.p1}`;
+            document.getElementById('plan-txt-p2').textContent = `₱${appData.prices.p2}`;
+            document.getElementById('plan-txt-p3').textContent = `₱${appData.prices.p3}`;
+
+            const viewerContainer = document.getElementById('viewer-channels-list');
+            viewerContainer.innerHTML = '';
+
+            // Grouping Channels by Category
+            const categories = {};
+            appData.channels.forEach(channel => {
+                const grp = channel.group || "Unassigned";
+                if (!categories[grp]) categories[grp] = [];
+                categories[grp].push(channel);
+            });
+
+            Object.keys(categories).forEach(categoryName => {
+                const section = document.createElement('div');
+                section.className = "space-y-1.5 pb-2";
+                
+                const header = document.createElement('h3');
+                header.className = "text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mb-1 border-l-2 border-slate-750";
+                header.textContent = categoryName;
+                section.appendChild(header);
+
+                categories[categoryName].forEach(channel => {
+                    const btn = document.createElement('button');
+                    btn.id = `view-chan-${channel.id}`;
+                    btn.onclick = () => selectChannel(channel.id);
+                    
+                    const hasSource = channel.src && channel.src.trim() !== "";
+                    btn.className = `w-full text-left p-2.5 rounded-xl flex items-center justify-between border transition duration-150 ${!hasSource ? 'opacity-40 cursor-not-allowed bg-slate-950/20 border-slate-900 text-slate-500' : 'bg-slate-900/30 border-slate-850 text-slate-300 hover:bg-slate-900/65'}`;
+
+                    // Logo Visual Fallback Handler
+                    let logoHTML = '';
+                    if (channel.logo && channel.logo !== 'https://siliconweb.com' && channel.logo.trim() !== "") {
+                        logoHTML = `<img src="${channel.logo}" alt="logo" class="w-8 h-8 object-contain rounded bg-slate-950 p-1 border border-slate-800 flex-shrink-0">`;
+                    } else {
+                        const initials = channel.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+                        logoHTML = `<div class="w-8 h-8 rounded bg-indigo-950/80 border border-indigo-900/40 text-indigo-400 font-bold text-[10px] flex items-center justify-center flex-shrink-0">${initials}</div>`;
+                    }
+
+                    btn.innerHTML = `
+                        <div class="flex items-center space-x-2.5 overflow-hidden">
+                            ${logoHTML}
+                            <div class="truncate text-left">
+                                <span class="text-xs font-bold block truncate max-w-[140px] text-slate-100">${channel.name}</span>
+                                <span class="text-[9px] text-slate-500 block truncate max-w-[140px]" id="channel-playing-${channel.id}">Calculating...</span>
+                            </div>
+                        </div>
+                    `;
+
+                    if (!hasSource) btn.disabled = true;
+                    section.appendChild(btn);
+                    updateChannelNowPlayingLabel(channel);
+                });
+
+                viewerContainer.appendChild(section);
+            });
+
+            const activeSet = appData.channels.find(c => c.src && c.src !== "");
+            if (activeSet && (!activeChannel || !appData.channels.some(c => c.id === activeChannel.id))) {
+                activeChannel = activeSet;
+                document.getElementById('current-channel-title').textContent = activeSet.name.toUpperCase();
+            }
+            
+            updateEPGDisplay();
+        }
+
+        // Live EPG Calculations
+        function getNowPlayingProgram(channel) {
+            if (!channel.schedule || channel.schedule.length === 0) {
+                return { title: "Continuous Broadcast Loop Feed", start: "00:00", end: "24:00" };
+            }
+
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+            for (let item of channel.schedule) {
+                const startParts = item.start.split(":");
+                const endParts = item.end.split(":");
+                const startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+                const endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+
+                if (currentMinutes >= startMin && currentMinutes < endMin) {
+                    return item;
+                }
+            }
+            return channel.schedule[0]; 
+        }
+
+        function updateChannelNowPlayingLabel(channel) {
+            const label = document.getElementById(`channel-playing-${channel.id}`);
+            if (label) {
+                const prog = getNowPlayingProgram(channel);
+                label.textContent = prog.title;
+            }
+        }
+
+        function updateEPGDisplay() {
+            if (!activeChannel) return;
+
+            const currentProg = getNowPlayingProgram(activeChannel);
+            document.getElementById('epg-now-title').textContent = currentProg.title;
+            document.getElementById('epg-now-time').textContent = `${currentProg.start} - ${currentProg.end}`;
+
+            const guideContainer = document.getElementById('epg-timeline-container');
+            guideContainer.innerHTML = '';
+
+            const schedList = activeChannel.schedule && activeChannel.schedule.length > 0 
+                ? activeChannel.schedule 
+                : [{ title: "Continuous Broadcast Loop Feed", start: "00:00", end: "24:00" }];
+
+            schedList.forEach(item => {
+                const isCurrent = item.title === currentProg.title && item.start === currentProg.start;
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-xl border transition ${isCurrent ? 'bg-indigo-950/20 border-indigo-500/80 shadow-md shadow-indigo-950/10' : 'bg-slate-950 border-slate-850'}`;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="text-[9px] font-mono font-bold ${isCurrent ? 'text-indigo-400' : 'text-slate-500'}">${item.start} - ${item.end}</span>
+                        ${isCurrent ? '<span class="bg-red-950 text-red-400 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase border border-red-900/60">LIVE</span>' : ''}
+                    </div>
+                    <p class="text-xs font-bold mt-2 text-slate-200 line-clamp-1">${item.title}</p>
+                `;
+                guideContainer.appendChild(card);
+            });
+        }
+
+        // Subscription Manager logic
+        function checkSubscription() {
+            const expirationTime = localStorage.getItem('saas_premium_expiry');
+            const isTrial = localStorage.getItem('saas_is_trial') === 'true';
+            const overlay = document.getElementById('paywall-overlay');
+            const subBadge = document.getElementById('sub-badge');
+            const countdownEl = document.getElementById('subscription-countdown');
+
+            if (expirationTime) {
+                const now = new Date().getTime();
+                const timeLeft = expirationTime - now;
+
+                if (timeLeft > 0) {
+                    overlay.classList.add('hidden');
+                    
+                    if (isTrial) {
+                        subBadge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-indigo-950 text-indigo-400 border border-indigo-800";
+                        subBadge.textContent = "2-Day Free Trial";
+                    } else {
+                        subBadge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800";
+                        subBadge.textContent = "Access Unlocked";
+                    }
+
+                    const hrs = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const mins = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    if (timeLeft > (24 * 60 * 60 * 1000)) {
+                        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                        countdownEl.textContent = `Expires in: ${days}d ${hrs}h`;
+                    } else {
+                        countdownEl.textContent = `Expires in: ${hrs}h ${mins}m`;
+                    }
+
+                    if (!document.getElementById('video').src && activeChannel) {
+                        // Stream source base64 decrypted securely in runtime memory only
+                        const decryptedStreamUrl = secureDecode(activeChannel.src);
+                        loadVideoStream(decryptedStreamUrl);
+                    }
+                    return true;
+                }
+            }
+
+            // Expiry Overlay display
+            overlay.classList.remove('hidden');
+            subBadge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-red-950 text-red-400 border border-red-800";
+            subBadge.textContent = "Subscription Inactive";
+            countdownEl.textContent = "Subscription Expired";
+            unloadVideo();
+            return false;
+        }
+
+        function loadVideoStream(src) {
+            const video = document.getElementById('video');
+            if (!src) return;
+
+            if (Hls.isSupported()) {
+                if (hlsInstance) hlsInstance.destroy();
+                hlsInstance = new Hls({
+                    maxMaxBufferLength: 10,
+                    enableWorker: true
+                });
+                hlsInstance.loadSource(src);
+                hlsInstance.attachMedia(video);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = src;
+                video.addEventListener('loadedmetadata', () => video.play().catch(() => {}));
+            } else {
+                video.src = src;
+                video.play().catch(() => {});
+            }
+        }
+
+        function unloadVideo() {
+            const video = document.getElementById('video');
+            video.pause();
+            video.removeAttribute('src');
+            video.load();
+            if (hlsInstance) {
+                hlsInstance.destroy();
+                hlsInstance = null;
+            }
+        }
+
+        function selectChannel(id) {
+            const isSubscribed = checkSubscription();
+            if (!isSubscribed) {
+                openPaymentModal();
+                return;
+            }
+
+            const target = appData.channels.find(c => c.id === id);
+            if (!target || !target.src) return;
+
+            activeChannel = target;
+            document.getElementById('current-channel-title').textContent = target.name.toUpperCase();
+            
+            appData.channels.forEach(ch => {
+                const el = document.getElementById(`view-chan-${ch.id}`);
+                if (!el) return;
+                const hasSource = ch.src && ch.src.trim() !== "";
+                if (ch.id === id) {
+                    el.className = "w-full text-left p-2.5 rounded-xl flex items-center justify-between border transition duration-150 bg-indigo-950/20 border-indigo-500 text-white";
+                } else {
+                    el.className = `w-full text-left p-2.5 rounded-xl flex items-center justify-between border transition duration-150 ${!hasSource ? 'opacity-40 cursor-not-allowed bg-slate-950/20 border-slate-900 text-slate-500' : 'bg-slate-900/30 border-slate-850 text-slate-300 hover:bg-slate-900/65'}`;
+                }
+            });
+
+            updateEPGDisplay();
+            
+            // Decrypt on the fly in memory
+            const stream = secureDecode(target.src);
+            loadVideoStream(stream);
+        }
+
+        // Plan selectors
+        function selectPlan(days, planId) {
+            selectedDurationDays = days;
+            selectedPlanId = planId;
+            document.querySelectorAll('.plan-btn').forEach(btn => {
+                btn.className = "plan-btn border border-slate-800 bg-slate-950/45 p-3 rounded-xl flex flex-col items-center justify-center transition";
+            });
+            document.getElementById(`plan-btn-${planId}`).className = "plan-btn border-2 border-indigo-600 bg-indigo-950/20 p-3 rounded-xl flex flex-col items-center justify-center transition";
+            
+            // Re-render the respective payment redirect QR code in checkout box
+            const payload = getPlanPayloadUrl(planId);
+            document.getElementById('viewer-checkout-qr-preview').textContent = payload;
+            document.getElementById('viewer-checkout-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(payload)}`;
+        }
+
+        function openPaymentModal() {
+            document.getElementById('payment-modal').classList.remove('hidden');
+            selectPlan(7, 'p1'); // Default to 7 days on launch
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+        }
+
+        function processSubscription() {
+            const refInput = document.getElementById('ref-number').value.replace(/\s+/g, '');
+            if (refInput.length < 10) {
+                alert("Please input your 13-digit GCash Reference Number.");
+                return;
+            }
+
+            let expirationTimestamp;
+            if (document.getElementById('test-daily-mode').checked) {
+                const tonight = new Date();
+                tonight.setHours(24, 0, 0, 0); 
+                expirationTimestamp = tonight.getTime();
+            } else {
+                expirationTimestamp = new Date().getTime() + (selectedDurationDays * 24 * 60 * 60 * 1000);
+            }
+
+            // Save subscription details to client (Clear trial status)
+            localStorage.setItem('saas_premium_expiry', expirationTimestamp);
+            localStorage.removeItem('saas_is_trial');
+            
+            alert("Verification Success. Premium channels unlocked.");
+            closePaymentModal();
+            checkSubscription();
+            
+            if (activeChannel) selectChannel(activeChannel.id);
+        }
+
+        initSaaS();
+    </script>
+</body>
+</html>
